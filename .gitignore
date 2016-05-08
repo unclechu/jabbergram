@@ -1,0 +1,7 @@
+*.ini
+.dir-locals.el
+dist
+MANIFEST
+*.egg-info
+__pycache__
+
