@@ -10,6 +10,7 @@ from queue import Queue
 from telegram.error import NetworkError, Unauthorized
 from time import sleep
 from sys import argv
+from sys import exit
 
 
 class EchoBot(sleekxmpp.ClientXMPP):
@@ -30,13 +31,12 @@ class EchoBot(sleekxmpp.ClientXMPP):
         t = Thread(target=self.read_tg)
         t.daemon = True
         t.start()
-
-        # activar logueo basico
-        logging.basicConfig(
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            level=logging.INFO)
-
-        logger = logging.getLogger(__name__)
+        print('Please wait a couple of minutes until it\'s correctly connected'
+                ' to telegram.')
+        while True:
+            out = input('Enter "quit" if you want to stop the program.\n')
+            if out == 'quit':
+                exit()
 
     def read_tg(self):
         update_id = 0
