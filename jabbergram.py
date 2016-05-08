@@ -45,13 +45,12 @@ class EchoBot(sleekxmpp.ClientXMPP):
             try:
                 for update in self.bot.getUpdates(offset=update_id,
                                                       timeout=10):
-                    update_id = update.update_id + 1
                     message = update.message.text
                     user = str(update.message.from_user.username)
+
                     if not user:
                         user = str(update.message.from_user.first_name)
-                    if not user:
-                        user = "Unidentified: "
+
                     mensaje = user + ": " + message
                     chat_id = update.message.chat_id
 
@@ -59,10 +58,12 @@ class EchoBot(sleekxmpp.ClientXMPP):
                         self.send_message(mto=self.muc_room,
                                               mbody=mensaje,
                                               mtype='groupchat')
+                        update_id = update.update_id + 1
+
             except NetworkError:
                 sleep(1)
             except Unauthorized:
-                update_id += 1
+                sleep(1)
 
     def start(self, event):
         self.get_roster()
@@ -70,12 +71,9 @@ class EchoBot(sleekxmpp.ClientXMPP):
         self.plugin['xep_0045'].joinMUC(self.muc_room, self.nick, wait=True)
 
     def muc_message(self, msg):
-        print(msg)
         if msg['mucnick'] != self.nick:
             mensaje = str(msg['from']).split('/')[1] + ': ' + str(msg['body'])
-            print(mensaje)
             self.bot.sendMessage(self.group, text=mensaje)
-            print("fuera")
 
 if __name__ == '__main__':
 
