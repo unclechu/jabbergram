@@ -137,7 +137,7 @@ Castellano
 Acerca de
 ~~~~~~~~~
 
-Con este programa, es posible utilizar una sala ``XMPP`` para hablar con
+Con este programa es posible utilizar una sala ``XMPP`` para hablar con
 un grupo de ``Telegram`` y viceversa. El objetivo de este programa es el
 de ser sólo una pasarela sencilla, sólo tiene que pasar el texto de un
 lado al otro. Una vez que sea estable, probablemente no tendrá más
@@ -161,7 +161,7 @@ Clonar el repositorio:
 
 ::
 
-    $ git clone git: //daemons.cf/jabbergram
+    $ git clone git://daemons.cf/jabbergram
     $ cd jabbergram
     $ su -c "pip3 instalar requirements.txt -r"
     $ su -c "python3 setup.py instalar"
@@ -176,7 +176,7 @@ tener una cuenta de ``Telegram`` y hablar con
 
 ::
 
-    /comienzo
+    /start
     /newbot
     NombreDelBot # terminado en bot, siempre
     # A continuación, se mostrará el token del bot, hay que guardarlo
@@ -229,7 +229,7 @@ error si no existe:
 ::
 
     # Es recomendable utilizar tmux o la pantalla para ejecutar la siguiente orden
-    $ Jabbergram.py example.ini
+    $ jabbergram.py example.ini
 
 Licencia
 ~~~~~~~~

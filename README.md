@@ -105,7 +105,7 @@ You can create all config files you want. You will only need to pass it as param
 
 ### Acerca de<a id="orgheadline7"></a>
 
-Con este programa, es posible utilizar una sala `XMPP` para hablar con un grupo de `Telegram` y viceversa. El objetivo de este programa es el de ser sólo una pasarela sencilla, sólo tiene que pasar el texto de un lado al otro. Una vez que sea estable, probablemente no tendrá más mejoras, ya que yo no las necesito.
+Con este programa es posible utilizar una sala `XMPP` para hablar con un grupo de `Telegram` y viceversa. El objetivo de este programa es el de ser sólo una pasarela sencilla, sólo tiene que pasar el texto de un lado al otro. Una vez que sea estable, probablemente no tendrá más mejoras, ya que yo no las necesito.
 
 ### Instalación<a id="orgheadline8"></a>
 
@@ -117,7 +117,7 @@ Instalar a través de `pip`:
 
 Clonar el repositorio:
 
-    $ git clone git: //daemons.cf/jabbergram
+    $ git clone git://daemons.cf/jabbergram
     $ cd jabbergram
     $ su -c "pip3 instalar requirements.txt -r"
     $ su -c "python3 setup.py instalar"
@@ -126,7 +126,7 @@ Clonar el repositorio:
 
 Este programa es simple, no tiene ni un menú de `ayuda`. Lo primero que hay que hacer es crear el bot de `Telegrama`. Para ello, hay que tener una cuenta de `Telegram` y hablar con [BotFather](https://telegram.me/botfather). A continuación, ejecuta:
 
-    /comienzo
+    /start
     /newbot
     NombreDelBot # terminado en bot, siempre
     # A continuación, se mostrará el token del bot, hay que guardarlo
@@ -155,7 +155,7 @@ No hay manera fácil de ver el ID desde `Telegram`, por lo que se puede utilizar
 Se pueden crear todos los archivos de configuración que se deseen. Sólo tendrás que pasarlo como parámetro al programa,  si no se hace se intentará coger el archivo `config.ini` por defecto, y se producirá un error si no existe:
 
     # Es recomendable utilizar tmux o la pantalla para ejecutar la siguiente orden
-    $ Jabbergram.py example.ini
+    $ jabbergram.py example.ini
 
 ### Licencia<a id="orgheadline11"></a>
 
