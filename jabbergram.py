@@ -3,7 +3,6 @@
 
 import sleekxmpp
 import telegram
-import logging
 import configparser
 from threading import Thread
 from queue import Queue
@@ -31,12 +30,9 @@ class EchoBot(sleekxmpp.ClientXMPP):
         t = Thread(target=self.read_tg)
         t.daemon = True
         t.start()
-        print('Please wait a couple of minutes until it\'s correctly connected'
-                ' to telegram.')
-        while True:
-            out = input('Enter "quit" if you want to stop the program.\n')
-            if out == 'quit':
-                exit()
+
+        print('Please wait a couple of minutes until it\'s correctly '
+                  'connected')
 
     def read_tg(self):
         update_id = 0
