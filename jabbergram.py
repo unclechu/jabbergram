@@ -13,25 +13,27 @@ from sys import exit
 
 
 class EchoBot(sleekxmpp.ClientXMPP):
-    def __init__(self, jid, password, room, nick, token, group):
+    def __init__(self, jid, password, rooms, nick, token, groups):
         # XMPP
         super(EchoBot, self).__init__(jid, password)
         self.add_event_handler('session_start', self.start)
         self.add_event_handler('groupchat_message', self.muc_message)
-        self.add_event_handler("muc::%s::got_online" % room,
-                               self.muc_online)
-        self.add_event_handler("muc::%s::got_offline" % room,
-                               self.muc_offline)
 
-        self.muc_room = room
+        self.muc_rooms = rooms.split()
         self.nick = nick
         self.token = token
-        self.xmpp_users = []
+        self.xmpp_users = {}
+
+        for muc in self.muc_rooms:
+            self.add_event_handler("muc::%s::got_online" % muc,
+                                self.muc_online)
+            self.add_event_handler("muc::%s::got_offline" % muc,
+                                self.muc_offline)
 
         # Telegram
-        self.group = group
+        self.groups = groups.split()
         self.bot = telegram.Bot(self.token)
-        self.telegram_users = []
+        self.telegram_users = {}
 
         # meter el conecto del tg en un hilo
         t = Thread(target=self.read_tg)
@@ -51,66 +53,91 @@ class EchoBot(sleekxmpp.ClientXMPP):
                     message = update.message.text
                     user = str(update.message.from_user.username)
 
+                    # sometimes there's no user. weird, but it happens
                     if not user:
                         user = str(update.message.from_user.first_name)
 
                     msg = user + ": " + message
                     chat_id = update.message.chat_id
 
-                    if message and chat_id == self.group:
-                        if user not in self.telegram_users:
-                            self.telegram_users.append(user)
+                    if message:
+                        index = self.groups.index(str(chat_id))
+                        receiver = self.muc_rooms[index]
+
+                        if chat_id in self.telegram_users:
+                            if user not in self.telegram_users[chat_id]:
+                                self.telegram_users[chat_id] += ' ' + user
+                        else:
+                            self.telegram_users[chat_id] = ' ' + user
 
                         if message == '.users':
-                            self.say_users('telegram')
-
+                            index = self.groups.index(str(chat_id))
+                            muc = self.muc_rooms[index]
+                            self.say_users('telegram', muc, chat_id)
                         else:
-                            self.send_message(mto=self.muc_room,
-                                                mbody=msg,
+                            self.send_message(mto=receiver, mbody=msg,
                                                 mtype='groupchat')
 
                     update_id = update.update_id + 1
 
-            except NetworkError:
+            except NetworkError as e:
                 sleep(1)
+
             except Unauthorized:
                 sleep(1)
 
     def start(self, event):
         self.get_roster()
         self.send_presence()
-        self.plugin['xep_0045'].joinMUC(self.muc_room, self.nick, wait=True)
+
+        for muc in self.muc_rooms:
+            self.plugin['xep_0045'].joinMUC(muc, self.nick, wait=True)
 
     def muc_message(self, msg):
+        muc_room = str(msg['from']).split('/')[0]
+        index = self.muc_rooms.index(muc_room)
+        tg_group = self.groups[index]
+
         if msg['body'] == '.users':
-            self.say_users('xmpp')
+            self.say_users('xmpp', muc_room, tg_group)
 
         elif msg['mucnick'] != self.nick:
             message = str(msg['from']).split('/')[1] + ': ' + str(msg['body'])
-            self.bot.sendMessage(self.group, text=message)
-
+            self.bot.sendMessage(tg_group, text=message)
 
     def muc_online(self, presence):
-        if presence['muc']['nick'] != self.nick:
-            self.xmpp_users.append(presence['muc']['nick'])
+        user = presence['muc']['nick']
+        muc = presence['from'].bare
+
+        if user != self.nick:
+            if muc in self.xmpp_users:
+                self.xmpp_users[muc].append(presence['muc']['nick'])
+            else:
+                self.xmpp_users[muc] = [presence['muc']['nick']]
 
     def muc_offline(self, presence):
-        if presence['muc']['nick'] != self.nick:
-            self.xmpp_users.remove(presence['muc']['nick'])
+        user = presence['muc']['nick']
+        muc = presence['from'].bare
 
-    def say_users(self, service):
+        if user != self.nick:
+            self.xmpp_users[muc].pop(presence['muc']['nick'])
+
+    def say_users(self, service, muc, group):
         xmpp_users = ""
         tg_users = ""
+        group = int(group)
 
-        for i in self.xmpp_users:
-            xmpp_users = xmpp_users + ' _' + i
+        if muc in self.xmpp_users:
+            for i in self.xmpp_users[muc]:
+                xmpp_users = xmpp_users + ' _' + i
+        else:
+            xmpp_users = ""
 
         msg1 = 'XMPP Users:' + xmpp_users
 
-        for i in self.telegram_users:
-            tg_users = tg_users + ' ' + i
-
-        if not tg_users:
+        if group in self.telegram_users:
+            tg_users = self.telegram_users[group]
+        else:
             tg_users = ""
 
         msg2 = 'Telegram Users:' + tg_users
@@ -118,11 +145,11 @@ class EchoBot(sleekxmpp.ClientXMPP):
         message = msg1 + '\n' + msg2
 
         if service == 'xmpp':
-            self.send_message(mto=self.muc_room,
-                                mbody=message,
-                                mtype='groupchat')
+            self.send_message(mto=muc, mbody=message, mtype='groupchat')
+        # arreglar el .users por el lado de tg
         elif service == 'telegram':
-            self.bot.sendMessage(self.group, text=message)
+            self.bot.sendMessage(group, text=message)
+
 
 if __name__ == '__main__':
 
@@ -141,12 +168,12 @@ if __name__ == '__main__':
     # asignar valores para el bot
     jid = config[0]
     password = config[1]
-    muc_room = config[2]
+    muc_rooms = config[2]
     nick = config[3]
     token = config[4]
-    group = int(config[5])
+    groups = config[5]
 
-    xmpp = EchoBot(jid, password, muc_room, nick, token, group)
+    xmpp = EchoBot(jid, password, muc_rooms, nick, token, groups)
     xmpp.register_plugin('xep_0045')
 
     if xmpp.connect():
