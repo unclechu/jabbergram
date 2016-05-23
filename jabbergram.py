@@ -60,7 +60,7 @@ class EchoBot(sleekxmpp.ClientXMPP):
                     msg = user + ": " + message
                     chat_id = update.message.chat_id
 
-                    if message:
+                    if message and str(chat_id) in self.groups:
                         index = self.groups.index(str(chat_id))
                         receiver = self.muc_rooms[index]
 
@@ -77,7 +77,6 @@ class EchoBot(sleekxmpp.ClientXMPP):
                         else:
                             self.send_message(mto=receiver, mbody=msg,
                                                 mtype='groupchat')
-
                     update_id = update.update_id + 1
 
             except NetworkError as e:
