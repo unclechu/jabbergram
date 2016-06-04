@@ -35,7 +35,7 @@ class EchoBot(sleekxmpp.ClientXMPP):
         self.bot = telegram.Bot(self.token)
         self.telegram_users = {}
 
-        # meter el conecto del tg en un hilo
+        # meter el conector del tg en un hilo
         t = Thread(target=self.read_tg)
         t.daemon = True
         t.start()
@@ -85,6 +85,10 @@ class EchoBot(sleekxmpp.ClientXMPP):
             except Unauthorized:
                 sleep(1)
 
+            except Exception as e:
+                print(e)
+
+
     def start(self, event):
         self.get_roster()
         self.send_presence()
@@ -119,7 +123,7 @@ class EchoBot(sleekxmpp.ClientXMPP):
         muc = presence['from'].bare
 
         if user != self.nick:
-            self.xmpp_users[muc].pop(presence['muc']['nick'])
+            self.xmpp_users[muc].remove(presence['muc']['nick'])
 
     def say_users(self, service, muc, group):
         xmpp_users = ""

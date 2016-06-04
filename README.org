@@ -48,12 +48,19 @@
 
     There's no easy way to see this from telegram, so you can use the separate utility called =seeIdGroups.py=. To execute it, you only need to set the =token= parameter in the config file. You will need that somebody invite the bot to the group. Also, people on that group must send some messages, so the utility can grab it's id. It may take a couple. When you have the group ID you want, just press Ctrl-c, copy it to the config file (even the minus symbol), and the configuration will be done.
 *** Usage
-    You can create all config files you want. You will only need to pass it as parameter, but if you don't it will try to grab =config.ini= by default, and it will fail if it doesn't exist:
+    There only can be one configuration file. This is because it can only be one bot connection, when there's more than one, message are lost. Therefore, for linking more rooms you must "link" them in the configuration. This is done simply by hooking jabber rooms with Telegram:
 
     #+BEGIN_SRC sh
-      # it's advisable to use tmux or screen to execute the next order
-      $ jabbergram.py example.ini
+      [Config]
+      JID = exampleJid@nope.org
+      password = difficultPassword
+      muc_room = exampleMuc@muc.nope.org segunda@muc.sip.org
+      nick = jabbergram
+      token = jabbergramBotTokken
+      group = -10293943920 120301203
     #+END_SRC
+
+    Thus, the example's muc "exampleMuc@muc.nope.org" syncs with the group "-10293943920" and "segunda@muc.sip.org" with "120 301203".
 *** License
     #+BEGIN_SRC text
       This program is free software: you can redistribute it and / or modify
@@ -88,7 +95,7 @@
        $ su -c "python3 setup.py instalar"
      #+END_SRC
 *** Configuración
-    Este programa es simple, no tiene ni un menú de =ayuda=. Lo primero que hay que hacer es crear el bot de =Telegrama=. Para ello, hay que tener una cuenta de =Telegram= y hablar con [[https://telegram.me/botfather][BotFather]]. A continuación, ejecuta:
+    Este programa es simple, no tiene ni un menú de =ayuda=. Lo primero que hay que hacer es crear el bot de =Telegram=. Para ello, hay que tener una cuenta de =Telegram= y hablar con [[https://telegram.me/botfather][BotFather]]. A continuación, ejecuta:
 
     #+BEGIN_SRC sh
       /start
@@ -118,12 +125,19 @@
 
     No hay manera fácil de ver el ID desde =Telegram=, por lo que se puede utilizar el programa llamado =seeIdGroups.py=. Para ejecutarlo sólo es necesario establecer el parámetro =token= del archivo de configuración. Necesitarás que alguien invite al bot al grupo. Además, las personas de ese grupo deben enviar algunos mensajes, para que el programa pueda coger su ID. Puede llevar unos segundos el que aparezcan los mensajes. Cuando se tenga el ID de grupo que se quiere, sólo hay que pulsar Ctrl-c, copiarlo en el archivo de configuración (incluido el simbolo menos), y la configuración estará terminada.
 *** Uso
-    Se pueden crear todos los archivos de configuración que se deseen. Sólo tendrás que pasarlo como parámetro al programa,  si no se hace se intentará coger el archivo =config.ini= por defecto, y se producirá un error si no existe:
+    Sólo puede haber un archivo de configuración. Esto es debido a que sólo puede haber una conexión del bot, cuando hay más de una se pierden mensajes. Por lo tanto, para linkear más salas hay que "linkearlas" en la configuración. Esto se hace, simplemente, enganchando las salas de jabber con las de telegram:
 
-    #+BEGIN_SRC sh
-      # Es recomendable utilizar tmux o la pantalla para ejecutar la siguiente orden
-      $ jabbergram.py example.ini
-    #+END_SRC
+#+BEGIN_SRC text
+      [Config]
+      JID = exampleJid@nope.org
+      password = difficultPassword
+      muc_room = exampleMuc@muc.nope.org segunda@muc.sip.org
+      nick = jabbergram
+      token = jabbergramBotTokken
+      group = -10293943920 120301203
+#+END_SRC
+
+De este modo, el muc "exampleMuc@muc.nope.org" se sincronizará con el grupo "-10293943920", y "segunda@muc.sip.org" con "120301203".
 *** Licencia
     #+BEGIN_SRC text
       This program is free software: you can redistribute it and / or modify
