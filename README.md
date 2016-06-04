@@ -81,10 +81,17 @@ There's no easy way to see this from telegram, so you can use the separate utili
 
 ### Usage<a id="orgheadline4"></a>
 
-You can create all config files you want. You will only need to pass it as parameter, but if you don't it will try to grab `config.ini` by default, and it will fail if it doesn't exist:
+There only can be one configuration file. This is because it can only be one bot connection, when there's more than one, message are lost. Therefore, for linking more rooms you must "link" them in the configuration. This is done simply by hooking jabber rooms with Telegram:
 
-    # it's advisable to use tmux or screen to execute the next order
-    $ jabbergram.py example.ini
+    [Config]
+    JID = exampleJid@nope.org
+    password = difficultPassword
+    muc_room = exampleMuc@muc.nope.org segunda@muc.sip.org
+    nick = jabbergram
+    token = jabbergramBotTokken
+    group = -10293943920 120301203
+
+Thus, the example's muc "exampleMuc@muc.nope.org" syncs with the group "-10293943920" and "segunda@muc.sip.org" with "120 301203".
 
 ### License<a id="orgheadline5"></a>
 
@@ -124,7 +131,7 @@ Clonar el repositorio:
 
 ### Configuración<a id="orgheadline9"></a>
 
-Este programa es simple, no tiene ni un menú de `ayuda`. Lo primero que hay que hacer es crear el bot de `Telegrama`. Para ello, hay que tener una cuenta de `Telegram` y hablar con [BotFather](https://telegram.me/botfather). A continuación, ejecuta:
+Este programa es simple, no tiene ni un menú de `ayuda`. Lo primero que hay que hacer es crear el bot de `Telegram`. Para ello, hay que tener una cuenta de `Telegram` y hablar con [BotFather](https://telegram.me/botfather). A continuación, ejecuta:
 
     /start
     /newbot
@@ -152,10 +159,17 @@ No hay manera fácil de ver el ID desde `Telegram`, por lo que se puede utilizar
 
 ### Uso<a id="orgheadline10"></a>
 
-Se pueden crear todos los archivos de configuración que se deseen. Sólo tendrás que pasarlo como parámetro al programa,  si no se hace se intentará coger el archivo `config.ini` por defecto, y se producirá un error si no existe:
+Sólo puede haber un archivo de configuración. Esto es debido a que sólo puede haber una conexión del bot, cuando hay más de una se pierden mensajes. Por lo tanto, para linkear más salas hay que "linkearlas" en la configuración. Esto se hace, simplemente, enganchando las salas de jabber con las de telegram:
 
-    # Es recomendable utilizar tmux o la pantalla para ejecutar la siguiente orden
-    $ jabbergram.py example.ini
+    [Config]
+    JID = exampleJid@nope.org
+    password = difficultPassword
+    muc_room = exampleMuc@muc.nope.org segunda@muc.sip.org
+    nick = jabbergram
+    token = jabbergramBotTokken
+    group = -10293943920 120301203
+
+De este modo, el muc "exampleMuc@muc.nope.org" se sincronizará con el grupo "-10293943920", y "segunda@muc.sip.org" con "120301203".
 
 ### Licencia<a id="orgheadline11"></a>
 
