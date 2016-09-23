@@ -12,10 +12,10 @@ from sys import argv
 from sys import exit
 
 
-class EchoBot(sleekxmpp.ClientXMPP):
+class jabbegram(sleekxmpp.ClientXMPP):
     def __init__(self, jid, password, rooms, nick, token, groups):
         # XMPP
-        super(EchoBot, self).__init__(jid, password)
+        super(jabbergram, self).__init__(jid, password)
         self.add_event_handler('session_start', self.start)
         self.add_event_handler('groupchat_message', self.muc_message)
 
@@ -35,7 +35,7 @@ class EchoBot(sleekxmpp.ClientXMPP):
         self.bot = telegram.Bot(self.token)
         self.telegram_users = {}
 
-        # meter el conector del tg en un hilo
+        # put tg connector in a thread
         t = Thread(target=self.read_tg)
         t.daemon = True
         t.start()
@@ -56,6 +56,11 @@ class EchoBot(sleekxmpp.ClientXMPP):
                     # sometimes there's no user. weird, but it happens
                     if not user:
                         user = str(update.message.from_user.first_name)
+
+                    # even weirder is that none of them exist
+                    # let's take last_name
+                    if not user:
+                        user = str(update.message.from_user.last_name)
 
                     msg = user + ": " + message
                     chat_id = update.message.chat_id
@@ -86,6 +91,7 @@ class EchoBot(sleekxmpp.ClientXMPP):
                 sleep(1)
 
             except Exception as e:
+                update_id += 1
                 print(e)
 
 
@@ -176,7 +182,7 @@ if __name__ == '__main__':
     token = config[4]
     groups = config[5]
 
-    xmpp = EchoBot(jid, password, muc_rooms, nick, token, groups)
+    xmpp = jabbergram(jid, password, muc_rooms, nick, token, groups)
     xmpp.register_plugin('xep_0045')
 
     if xmpp.connect():
