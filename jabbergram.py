@@ -99,26 +99,27 @@ class Jabbergram(sleekxmpp.ClientXMPP):
                             if update.message.audio:
                                 d_file = update.message.audio
                                 ext = '.ogg'
+                                size = d_file.file_size
                             elif update.message.document:
                                 d_file = update.message.document
                                 ext = ''
+                                size = d_file.file_size
                             elif update.message.photo:
                                 d_file = update.message.photo[-1]
                                 ext = '.jpg'
+                                size = d_file.file_size
                             elif update.message.video:
                                 d_file = update.message.video[-1]
                                 ext = '.mp4'
+                                size = d_file.file_size
                             elif update.message.voice:
                                 d_file = update.message.voice
                                 ext = '.ogg'
-
                                 size = d_file.file_size
-
                             if self.max_size >= size:
                                 t_file = self.bot.getFile(d_file.file_id)
                                 name = '/tmp/' + d_file.file_id + ext
                                 t_file.download(name)
-
                                 url = self.http_upload.upload(
                                                               self.component,
                                                               '', name, size)
