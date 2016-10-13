@@ -36,6 +36,8 @@
 
 With this program, it's possible to use a MuC `XMPP` room to talk to a group on `Telegram` and vice versa. The aim of this program is to be just a simple gateway, just pass text from one way to the other. Once it's stable, it probably won't have more improvements, since I don't need them.
 
+Since version 0.1.6, Jabbergram has HTTP Upload support. If the server supports it, it will automatically upload all the files sent to the Telegram group.
+
 ### Installation<a id="orgheadline2"></a>
 
 As with any program that uses python, it should be used a virtual environment (virtualenv), but that is user selectable. It's possible to use one of the next installation methods:
@@ -114,6 +116,8 @@ Thus, the example's muc "exampleMuc@muc.nope.org" syncs with the group "-1029394
 
 Con este programa es posible utilizar una sala `XMPP` para hablar con un grupo de `Telegram` y viceversa. El objetivo de este programa es el de ser sólo una pasarela sencilla, sólo tiene que pasar el texto de un lado al otro. Una vez que sea estable, probablemente no tendrá más mejoras, ya que yo no las necesito.
 
+Desde la versión 0.1.6, Jabbergram tiene soporte HTTP Upload. Si el servidor lo soporta, subirá automáticamente todos los archivos enviados desde el grupo de Telegram.
+
 ### Instalación<a id="orgheadline8"></a>
 
 Como con cualquier programa escrito en `Python`, deberia ser usado en un entorno virtual (virtualenv), pero eso queda a la elección del usuario. Es posible utilizar uno de los siguientes métodos de instalación:
@@ -126,8 +130,8 @@ Clonar el repositorio:
 
     $ git clone git://daemons.cf/jabbergram
     $ cd jabbergram
-    $ su -c "pip3 instalar requirements.txt -r"
-    $ su -c "python3 setup.py instalar"
+    $ su -c "pip3 instalar -r requirements.txt"
+    $ su -c "python3 setup.py install"
 
 ### Configuración<a id="orgheadline9"></a>
 

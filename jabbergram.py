@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+try:
+    import requests
+except:
+    print("HTTP Upload support disabled.")
 import sleekxmpp
 import telegram
 import configparser
-import requests
 from threading import Thread
 from queue import Queue
 from telegram.error import NetworkError, Unauthorized
@@ -313,7 +316,7 @@ class Jabbergram(sleekxmpp.ClientXMPP):
             xml = minidom.parseString(str(send))
             put_url = xml.getElementsByTagName('put')[0].firstChild.data
 
-            verify_ssl = 'False'
+            verify_ssl = ''
             if verify_ssl == 'False':
                 req = requests.put(put_url, data=open(u_file, 'rb'),
                                    verify=False)

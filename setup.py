@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-VERSION = '0.1.5'
+VERSION = '0.1.6'
 
 setup(name='jabbergram',
       version=VERSION,
@@ -17,6 +17,7 @@ setup(name='jabbergram',
       install_requires=[
           "sleekxmpp>=1.3.1",
           "python-telegram-bot>=4.0.3",
+          "requests>=2.11.1",
           ],
       classifiers=["Development Status :: 4 - Beta",
                    "Programming Language :: Python",
