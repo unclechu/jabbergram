@@ -8,18 +8,10 @@ from time import sleep
 from sys import argv
 
 
-config = []
 parser = configparser.SafeConfigParser()
-
-if len(argv) == 2:
-    parser.read(argv[1])
-else:
-    parser.read('config.ini')
-
-for name, value in parser.items('config'):
-    config.append(value)
-
-bot = telegram.Bot(config[4])
+parser.read(argv[1] if len(argv) == 2 else 'config.ini')
+config = parser['config']
+bot = telegram.Bot(config['token'])
 
 update_id = 0
 print('It can take a while to print the ID, please wait.')

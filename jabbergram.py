@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from sys import argv, exit, stderr
+
 try:
     import requests
 except:
-    print("HTTP Upload support disabled.")
+    print('HTTP Upload support disabled.', file=stderr)
+
 import sleekxmpp
 import telegram
 import configparser
@@ -12,8 +15,6 @@ from threading import Thread
 from queue import Queue
 from telegram.error import NetworkError, Unauthorized
 from time import sleep
-from sys import argv
-from sys import exit
 from sleekxmpp.xmlstream.stanzabase import ElementBase
 from sleekxmpp.stanza.iq import Iq
 from xml.dom import minidom
@@ -25,6 +26,7 @@ class Request(ElementBase):
     plugin_attrib = 'request'
     interfaces = set(('filename', 'size'))
     sub_interfaces = interfaces
+
 
 class Jabbergram(sleekxmpp.ClientXMPP):
     def __init__(self, jid, password, rooms, nick, token, groups):
@@ -261,6 +263,7 @@ class Jabbergram(sleekxmpp.ClientXMPP):
         elif service == 'telegram':
             self.bot.sendMessage(group, text=message)
 
+
     class HttpUpload():
         def __init__(self, parent_self):
             self.parent_self = parent_self
@@ -329,32 +332,25 @@ class Jabbergram(sleekxmpp.ClientXMPP):
 if __name__ == '__main__':
 
     # parse config
-    config = []
     parser = configparser.SafeConfigParser()
+    parser.read(argv[1] if len(argv) == 2 else 'config.ini')
+    config = parser['config']
 
-    if len(argv) == 2:
-        parser.read(argv[1])
-    else:
-        parser.read('config.ini')
+    xmpp = Jabbergram(
+        config['jid'],
+        config['password'],
+        config['muc_room'],
+        config['nick'],
+        config['token'],
+        config['group']
+    )
 
-    for name, value in parser.items('config'):
-        config.append(value)
-
-    # assign values for the bot
-    jid = config[0]
-    password = config[1]
-    muc_rooms = config[2]
-    nick = config[3]
-    token = config[4]
-    groups = config[5]
-
-    xmpp = Jabbergram(jid, password, muc_rooms, nick, token, groups)
     xmpp.register_plugin('xep_0045')
 
     if xmpp.connect():
         xmpp.process(block=True)
-        print("Done")
+        print('Done')
     else:
-        print("Unable to connect.")
+        print('Unable to connect.', file=stderr)
 
     # Vols un gram nen?
