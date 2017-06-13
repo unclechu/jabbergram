@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from sys import argv, exit, stderr
+def log(*args): print(*args)
+def err(*args): print(*args, file=stderr)
 
 try:
     import requests
 except:
-    print('HTTP Upload support disabled.', file=stderr)
+    err('HTTP Upload support disabled.')
 
 import sleekxmpp
 import telegram
@@ -63,8 +65,8 @@ class Jabbergram(sleekxmpp.ClientXMPP):
         t.daemon = True
         t.start()
 
-        print('Please wait a couple of minutes until it\'s correctly '
-              'connected')
+        log('Please wait a couple of minutes until it\'s correctly '
+            'connected')
 
     def init_http(self):
         self.http_upload = self.HttpUpload(self)
@@ -177,6 +179,7 @@ class Jabbergram(sleekxmpp.ClientXMPP):
                                 self.telegram_users[chat_id] += ' ' + user
                         else:
                             self.telegram_users[chat_id] = ' ' + user
+                        log('xxx', self.telegram_users)
 
                         if message == '.users':
                             index = self.groups.index(str(chat_id))
@@ -188,16 +191,16 @@ class Jabbergram(sleekxmpp.ClientXMPP):
                     update_id = update.update_id + 1
 
             except NetworkError as e:
-                print(e)
+                err(e)
                 sleep(1)
 
             except Unauthorized:
-                print(e)
+                err(e)
                 sleep(1)
 
             except Exception as e:
                 update_id += 1
-                print(e)
+                err(e)
 
     def start(self, event):
         self.get_roster()
@@ -348,9 +351,8 @@ if __name__ == '__main__':
     xmpp.register_plugin('xep_0045')
 
     if xmpp.connect():
-        xmpp.process(block=True)
-        print('Done')
+        xmpp.process(block=False) # non-blocking mode for keyboard interrupting
     else:
-        print('Unable to connect.', file=stderr)
+        err('Unable to connect.')
 
     # Vols un gram nen?
