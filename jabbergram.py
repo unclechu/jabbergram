@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from sys import argv, exit, stderr
+
 def log(*args): print(*args)
 def err(*args): print(*args, file=stderr)
 
@@ -20,6 +21,8 @@ from time import sleep
 from sleekxmpp.xmlstream.stanzabase import ElementBase
 from sleekxmpp.stanza.iq import Iq
 from xml.dom import minidom
+
+from jabbergram.radio import Radio
 
 
 class Request(ElementBase):
@@ -42,6 +45,7 @@ class Jabbergram(sleekxmpp.ClientXMPP):
         self.token = token
         self.xmpp_users = {}
         self.jid = jid
+        self.radio = Radio()
 
         for muc in self.muc_rooms:
             self.add_event_handler("muc::%s::got_online" % muc,
@@ -54,19 +58,22 @@ class Jabbergram(sleekxmpp.ClientXMPP):
         self.bot = telegram.Bot(self.token)
         self.telegram_users = {}
 
+        # put tg connector in a thread
+        def start_read_tg_loop():
+            t = Thread(target=self.read_tg)
+            t.daemon = True
+            t.start()
+
+        self.radio.once('http-upload-initialized', start_read_tg_loop)
+
         # initialize http upload on a thread since its needed to be connected
         # to xmpp
         t = Thread(target=self.init_http)
         t.daemon = True
         t.start()
 
-        # put tg connector in a thread
-        t = Thread(target=self.read_tg)
-        t.daemon = True
-        t.start()
-
         log('Please wait a couple of minutes until it\'s correctly '
-            'connected')
+            'connected.')
 
     def init_http(self):
         self.http_upload = self.HttpUpload(self)
@@ -87,11 +94,12 @@ class Jabbergram(sleekxmpp.ClientXMPP):
             except:
                 self.max_size = None
 
+        self.radio.trigger('http-upload-initialized')
+
     def read_tg(self):
+        log('Reading events from Telegram...')
         update_id = 0
 
-        # wait until http_upload has been tested
-        sleep(5)
         while True:
             try:
                 for update in self.bot.getUpdates(offset=update_id,
@@ -127,8 +135,7 @@ class Jabbergram(sleekxmpp.ClientXMPP):
                                 t_file = self.bot.getFile(d_file.file_id)
                                 name = '/tmp/' + d_file.file_id + ext
                                 t_file.download(name)
-                                url = self.http_upload.upload(
-                                                              self.component,
+                                url = self.http_upload.upload(self.component,
                                                               '', name, size)
 
                                 if update.message.caption:
@@ -179,7 +186,6 @@ class Jabbergram(sleekxmpp.ClientXMPP):
                                 self.telegram_users[chat_id] += ' ' + user
                         else:
                             self.telegram_users[chat_id] = ' ' + user
-                        log('xxx', self.telegram_users)
 
                         if message == '.users':
                             index = self.groups.index(str(chat_id))
@@ -330,6 +336,11 @@ class Jabbergram(sleekxmpp.ClientXMPP):
                 req = requests.put(put_url, data=open(u_file, 'rb'))
 
             return put_url
+
+
+class VirtualUser(sleekxmpp.ClientXMPP):
+    def __init__(self):
+        pass
 
 
 if __name__ == '__main__':
