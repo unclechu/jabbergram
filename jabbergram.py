@@ -22,7 +22,7 @@ from sleekxmpp.xmlstream.stanzabase import ElementBase
 from sleekxmpp.stanza.iq import Iq
 from xml.dom import minidom
 
-from jabbergram.radio import Radio
+from radio import Radio
 
 
 class Request(ElementBase):
